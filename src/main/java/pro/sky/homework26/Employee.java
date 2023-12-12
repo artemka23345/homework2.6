@@ -6,9 +6,7 @@ public class Employee {
     private String name;
     private String surname;
 
-
-    //Constructor
-    public Employee(String name, String patronymic, String surname, int salary, int department) {
+    public Employee(String name,String surname) {
         this.name = name;
         this.surname = surname;
     }
@@ -36,8 +34,8 @@ public class Employee {
                 "name='" + getName() + '\'' +
                 ", surname='" + getSurname() + '\'' +
                 '}';
-    }
 
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -52,7 +50,3 @@ public class Employee {
         return Objects.hash(name, surname);
     }
 }
-
-
-
-
