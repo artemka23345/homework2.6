@@ -2,47 +2,64 @@ package pro.sky.homework26.service.impl;
 
 import org.springframework.stereotype.Service;
 import pro.sky.homework26.Employee;
+import pro.sky.homework26.Exeption.EmployeeAlreadyAddedException;
+import pro.sky.homework26.Exeption.EmployeeNotFoundException;
+import pro.sky.homework26.Exeption.EmployeeStorageIsFullException;
 import pro.sky.homework26.service.EmployeeService;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
     final int MAX_EMPLOYEE = 5;
-    List<Employee> EmployeeStorage = new ArrayList<>();
+    List<Employee> EmployeeStorage = new ArrayList<>(MAX_EMPLOYEE);
 
-    public Employee addEmployee(String name, String surname) {
-        if (EmployeeStorage.size() < MAX_EMPLOYEE) {
-            Employee newEmployee = new Employee(name, surname);
-            EmployeeStorage.add(newEmployee);
-            return newEmployee;
+    public Employee addEmployee(String firstName, String lastName) throws EmployeeStorageIsFullException, EmployeeAlreadyAddedException {
+        Employee newEmployee = new Employee(firstName, lastName);
+        if (EmployeeStorage.size() >= MAX_EMPLOYEE) {
+            throw new EmployeeStorageIsFullException("Хранилище заполнено");
         }
-      return null;
-    }//TODO
+        for (Employee employee : EmployeeStorage) {
+            if (employee.equals(newEmployee)) {
+                throw new EmployeeAlreadyAddedException("Уже есть такой сотруудник");
+            }
+        }
+        if (EmployeeStorage.size() < MAX_EMPLOYEE) {
+            EmployeeStorage.add(newEmployee);
+        }
+
+        return newEmployee;
+    }
+
 
     public List<Employee> listEmployee() {
-        System.out.println("Сработало");
         return EmployeeStorage;
     }
-    public Employee findEmployee(String name, String surname) {
-        Employee tmpEmpl = new Employee(name,surname);
-        for(Employee employee: EmployeeStorage){
-            if(employee.equals(tmpEmpl)){
-                System.out.println("найден");
+
+    public Employee findEmployee(String firstName, String lastName) throws EmployeeNotFoundException {
+        Employee tmpEmpl = new Employee(firstName, lastName);
+        for (Employee employee : EmployeeStorage) {
+            if (employee.equals(tmpEmpl)) {
                 return employee;
+            } else {
+                throw new EmployeeNotFoundException("Не найдено");
             }
         }
-        return null;
-    }//TODO
-    public Employee removeEmployee(String name, String surname) {
-        Employee tmpEmpl = new Employee(name,surname);
-        for(Employee employee: EmployeeStorage){
-            if(employee.equals(tmpEmpl)){
+        return tmpEmpl;
+    }
+
+    public Employee removeEmployee(String firstName, String lastName) throws EmployeeNotFoundException {
+        Employee tmpEmpl = new Employee(firstName, lastName);
+        for (Employee employee : EmployeeStorage) {
+            if (employee.equals(tmpEmpl)) {
                 EmployeeStorage.remove(employee);
-                System.out.println("Удалён");
                 return employee;
             }
+            if (!employee.equals(tmpEmpl)) {
+                throw new EmployeeNotFoundException("Удаляемый сотрудник не найден");
+            }
         }
-        return null;
+        return tmpEmpl;
     }
 }
